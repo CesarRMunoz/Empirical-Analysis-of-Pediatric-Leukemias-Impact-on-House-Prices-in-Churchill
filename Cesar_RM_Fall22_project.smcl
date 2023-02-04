@@ -1,0 +1,245 @@
+{smcl}
+{com}{sf}{ul off}{txt}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}D:\1A.SchoolHW\2022 Fall\ECN 140\Emperical project\Cesar_RM_Fall22_project.smcl
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res} 2 Dec 2022, 21:17:45
+{txt}
+{com}. 
+. use "D:\1A.SchoolHW\2022 Fall\ECN 140\Emperical project\EPDATA_F2022.dta", clear
+{txt}
+{com}. 
+. //installing package
+. ssc install estout, replace
+{txt}checking {hilite:estout} consistency and verifying not already installed...
+all files already exist and are up to date.
+
+{com}. 
+. //variables generated
+. gen lnrealsales = log(realsales)
+{txt}
+{com}. gen sqft2 = sqft^2
+{txt}
+{com}. gen year2000 = year >= 2000
+{txt}
+{com}. gen y99 = year >= 1999
+{txt}
+{com}. gen casesPresent = 0
+{txt}
+{com}. replace casesPresent = 1 if cases > 0
+{txt}(1,582 real changes made)
+
+{com}. gen acres2 = acres^2
+{txt}
+{com}. 
+. sort year
+{txt}
+{com}. 
+. // Code for data summary
+. 
+. // get a look at how the data is distributed
+. histogram realsales, frequency  title("Real House Sale Prices, before Log Transformation") // does appeare to be right skewed
+{txt}(bin={res}40{txt}, start={res}2252.5337{txt}, width={res}22337.679{txt})
+{res}{txt}
+{com}. histogram lnrealsales, frequency title("Real House Sale Prices, after Log Transformation") xtitle("Natural Log Value of Inflation-adjusted Sale Prices")
+{txt}(bin={res}40{txt}, start={res}7.719811{txt}, width={res}.14964041{txt})
+{res}{txt}
+{com}. 
+. //sactter plot of each variable, indiviually
+. scatter lnrealsales sqft, title("Log House price vs. Home Square Footage") ytitle("Log of Real Sale Price of Home") mcolor(%25)
+{res}{txt}
+{com}. 
+. scatter lnrealsales acres, title("Log House price vs. Plot Acerage") ytitle("Log of Real Sale Price of Home") mcolor(%25)
+{res}{txt}
+{com}. 
+. scatter lnrealsales age, title("Log House price vs. Age of Home") ytitle("Log of Real Sale Price of Home") mcolor(%25)
+{res}{txt}
+{com}. 
+. scatter lnrealsales condition, title("Log House price vs. Perceived condition of Home") ytitle("Log of Real Sale Price of Home") mcolor(%25)
+{res}{txt}
+{com}. 
+. // get correlation coefficient of two variables
+. correlate sqft condition
+{txt}(obs=9,773)
+
+             {c |}     sqft condit~n
+{hline 13}{c +}{hline 18}
+        sqft {c |}{res}   1.0000
+   {txt}condition {c |}{res}   0.5251   1.0000
+
+{txt}
+{com}. 
+. //plot residuals to check for heteroskedasticity
+. reg lnrealsales year2000##county acres sqft sqft2 age condition
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}     9,773
+{txt}{hline 13}{c +}{hline 34}   F(8, 9764)      = {res}  2094.10
+{txt}       Model {c |} {res} 924.601583         8  115.575198   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 538.883055     9,764  .055190809   {txt}R-squared       ={res}    0.6318
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.6315
+{txt}       Total {c |} {res} 1463.48464     9,772  .149763062   {txt}Root MSE        =   {res} .23493
+
+{txt}{hline 16}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}    lnrealsales{col 17}{c |} Coefficient{col 29}  Std. err.{col 41}      t{col 49}   P>|t|{col 57}     [95% con{col 70}f. interval]
+{hline 16}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 5}1.year2000 {c |}{col 17}{res}{space 2}-.0222743{col 29}{space 2} .0062275{col 40}{space 1}   -3.58{col 49}{space 3}0.000{col 57}{space 4}-.0344815{col 70}{space 3} -.010067
+{txt}{space 15} {c |}
+{space 9}county {c |}
+{space 5}Churchill  {c |}{col 17}{res}{space 2} .0833612{col 29}{space 2} .0066713{col 40}{space 1}   12.50{col 49}{space 3}0.000{col 57}{space 4} .0702841{col 70}{space 3} .0964382
+{txt}{space 15} {c |}
+year2000#county {c |}
+{space 3}1#Churchill  {c |}{col 17}{res}{space 2}-.1210268{col 29}{space 2} .0115758{col 40}{space 1}  -10.46{col 49}{space 3}0.000{col 57}{space 4}-.1437177{col 70}{space 3}-.0983359
+{txt}{space 15} {c |}
+{space 10}acres {c |}{col 17}{res}{space 2} .0046473{col 29}{space 2} .0003203{col 40}{space 1}   14.51{col 49}{space 3}0.000{col 57}{space 4} .0040196{col 70}{space 3} .0052751
+{txt}{space 11}sqft {c |}{col 17}{res}{space 2} .0007923{col 29}{space 2} .0000244{col 40}{space 1}   32.53{col 49}{space 3}0.000{col 57}{space 4} .0007446{col 70}{space 3}   .00084
+{txt}{space 10}sqft2 {c |}{col 17}{res}{space 2}-9.58e-08{col 29}{space 2} 6.33e-09{col 40}{space 1}  -15.14{col 49}{space 3}0.000{col 57}{space 4}-1.08e-07{col 70}{space 3}-8.34e-08
+{txt}{space 12}age {c |}{col 17}{res}{space 2}-.0040411{col 29}{space 2} .0001656{col 40}{space 1}  -24.41{col 49}{space 3}0.000{col 57}{space 4}-.0043657{col 70}{space 3}-.0037166
+{txt}{space 6}condition {c |}{col 17}{res}{space 2} .1882663{col 29}{space 2} .0065355{col 40}{space 1}   28.81{col 49}{space 3}0.000{col 57}{space 4} .1754554{col 70}{space 3} .2010772
+{txt}{space 10}_cons {c |}{col 17}{res}{space 2} 10.27468{col 29}{space 2} .0238683{col 40}{space 1}  430.47{col 49}{space 3}0.000{col 57}{space 4} 10.22789{col 70}{space 3} 10.32147
+{txt}{hline 16}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. rvfplot, yline(0) title("Residuals vs. Fitted Values from Full Model") mcolor(%25)
+{res}{txt}
+{com}. 
+. //
+. 
+. // Code for Regression Analysis
+. 
+. //full model
+. reg lnrealsales year2000##county acres acres2 sqft sqft2 age condition, robust
+
+{txt}Linear regression                               Number of obs     = {res}     9,773
+                                                {txt}F(9, 9763)        =  {res}  1021.37
+                                                {txt}Prob > F          = {res}    0.0000
+                                                {txt}R-squared         = {res}    0.6409
+                                                {txt}Root MSE          =    {res} .23202
+
+{txt}{hline 16}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 17}{c |}{col 29}    Robust
+{col 1}    lnrealsales{col 17}{c |} Coefficient{col 29}  std. err.{col 41}      t{col 49}   P>|t|{col 57}     [95% con{col 70}f. interval]
+{hline 16}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 5}1.year2000 {c |}{col 17}{res}{space 2}-.0205192{col 29}{space 2} .0053686{col 40}{space 1}   -3.82{col 49}{space 3}0.000{col 57}{space 4}-.0310427{col 70}{space 3}-.0099958
+{txt}{space 15} {c |}
+{space 9}county {c |}
+{space 5}Churchill  {c |}{col 17}{res}{space 2} .0840392{col 29}{space 2} .0073315{col 40}{space 1}   11.46{col 49}{space 3}0.000{col 57}{space 4}  .069668{col 70}{space 3} .0984104
+{txt}{space 15} {c |}
+year2000#county {c |}
+{space 3}1#Churchill  {c |}{col 17}{res}{space 2}-.1251008{col 29}{space 2} .0117209{col 40}{space 1}  -10.67{col 49}{space 3}0.000{col 57}{space 4}-.1480761{col 70}{space 3}-.1021254
+{txt}{space 15} {c |}
+{space 10}acres {c |}{col 17}{res}{space 2} .0139477{col 29}{space 2} .0017738{col 40}{space 1}    7.86{col 49}{space 3}0.000{col 57}{space 4} .0104707{col 70}{space 3} .0174247
+{txt}{space 9}acres2 {c |}{col 17}{res}{space 2}-.0000236{col 29}{space 2} 3.45e-06{col 40}{space 1}   -6.83{col 49}{space 3}0.000{col 57}{space 4}-.0000304{col 70}{space 3}-.0000168
+{txt}{space 11}sqft {c |}{col 17}{res}{space 2} .0007962{col 29}{space 2} .0000467{col 40}{space 1}   17.03{col 49}{space 3}0.000{col 57}{space 4} .0007045{col 70}{space 3} .0008878
+{txt}{space 10}sqft2 {c |}{col 17}{res}{space 2}-1.01e-07{col 29}{space 2} 1.33e-08{col 40}{space 1}   -7.60{col 49}{space 3}0.000{col 57}{space 4}-1.27e-07{col 70}{space 3}-7.49e-08
+{txt}{space 12}age {c |}{col 17}{res}{space 2}-.0042133{col 29}{space 2} .0002478{col 40}{space 1}  -17.01{col 49}{space 3}0.000{col 57}{space 4} -.004699{col 70}{space 3}-.0037277
+{txt}{space 6}condition {c |}{col 17}{res}{space 2} .1928592{col 29}{space 2} .0076735{col 40}{space 1}   25.13{col 49}{space 3}0.000{col 57}{space 4} .1778176{col 70}{space 3} .2079008
+{txt}{space 10}_cons {c |}{col 17}{res}{space 2} 10.26296{col 29}{space 2} .0432453{col 40}{space 1}  237.32{col 49}{space 3}0.000{col 57}{space 4} 10.17819{col 70}{space 3} 10.34773
+{txt}{hline 16}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. //create table for different models
+. reg lnrealsales year2000##county
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}    10,204
+{txt}{hline 13}{c +}{hline 34}   F(3, 10200)     = {res}    26.40
+{txt}       Model {c |} {res} 12.1636567         3  4.05455225   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res}  1566.3638    10,200  .153565078   {txt}R-squared       ={res}    0.0077
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.0074
+{txt}       Total {c |} {res} 1578.52745    10,203   .15471209   {txt}Root MSE        =   {res} .39187
+
+{txt}{hline 16}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}    lnrealsales{col 17}{c |} Coefficient{col 29}  Std. err.{col 41}      t{col 49}   P>|t|{col 57}     [95% con{col 70}f. interval]
+{hline 16}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 5}1.year2000 {c |}{col 17}{res}{space 2} .0394579{col 29}{space 2} .0101355{col 40}{space 1}    3.89{col 49}{space 3}0.000{col 57}{space 4} .0195903{col 70}{space 3} .0593254
+{txt}{space 15} {c |}
+{space 9}county {c |}
+{space 5}Churchill  {c |}{col 17}{res}{space 2}-.0399441{col 29}{space 2} .0095062{col 40}{space 1}   -4.20{col 49}{space 3}0.000{col 57}{space 4}-.0585781{col 70}{space 3}-.0213101
+{txt}{space 15} {c |}
+year2000#county {c |}
+{space 3}1#Churchill  {c |}{col 17}{res}{space 2}-.0773647{col 29}{space 2} .0187215{col 40}{space 1}   -4.13{col 49}{space 3}0.000{col 57}{space 4}-.1140625{col 70}{space 3}-.0406669
+{txt}{space 15} {c |}
+{space 10}_cons {c |}{col 17}{res}{space 2}  11.6274{col 29}{space 2} .0059601{col 40}{space 1} 1950.87{col 49}{space 3}0.000{col 57}{space 4} 11.61571{col 70}{space 3} 11.63908
+{txt}{hline 16}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. est store m1
+{txt}
+{com}. 
+. reg lnrealsales year2000##county acres acres2 sqft sqft2 age condition
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}     9,773
+{txt}{hline 13}{c +}{hline 34}   F(9, 9763)      = {res}  1935.96
+{txt}       Model {c |} {res} 937.932911         9  104.214768   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 525.551727     9,763  .053830967   {txt}R-squared       ={res}    0.6409
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.6406
+{txt}       Total {c |} {res} 1463.48464     9,772  .149763062   {txt}Root MSE        =   {res} .23202
+
+{txt}{hline 16}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}    lnrealsales{col 17}{c |} Coefficient{col 29}  Std. err.{col 41}      t{col 49}   P>|t|{col 57}     [95% con{col 70}f. interval]
+{hline 16}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 5}1.year2000 {c |}{col 17}{res}{space 2}-.0205192{col 29}{space 2} .0061513{col 40}{space 1}   -3.34{col 49}{space 3}0.001{col 57}{space 4}-.0325771{col 70}{space 3}-.0084613
+{txt}{space 15} {c |}
+{space 9}county {c |}
+{space 5}Churchill  {c |}{col 17}{res}{space 2} .0840392{col 29}{space 2} .0065887{col 40}{space 1}   12.76{col 49}{space 3}0.000{col 57}{space 4}  .071124{col 70}{space 3} .0969544
+{txt}{space 15} {c |}
+year2000#county {c |}
+{space 3}1#Churchill  {c |}{col 17}{res}{space 2}-.1251008{col 29}{space 2} .0114352{col 40}{space 1}  -10.94{col 49}{space 3}0.000{col 57}{space 4}-.1475161{col 70}{space 3}-.1026854
+{txt}{space 15} {c |}
+{space 10}acres {c |}{col 17}{res}{space 2} .0139477{col 29}{space 2} .0006703{col 40}{space 1}   20.81{col 49}{space 3}0.000{col 57}{space 4} .0126337{col 70}{space 3} .0152616
+{txt}{space 9}acres2 {c |}{col 17}{res}{space 2}-.0000236{col 29}{space 2} 1.50e-06{col 40}{space 1}  -15.74{col 49}{space 3}0.000{col 57}{space 4}-.0000265{col 70}{space 3}-.0000207
+{txt}{space 11}sqft {c |}{col 17}{res}{space 2} .0007962{col 29}{space 2} .0000241{col 40}{space 1}   33.10{col 49}{space 3}0.000{col 57}{space 4}  .000749{col 70}{space 3} .0008433
+{txt}{space 10}sqft2 {c |}{col 17}{res}{space 2}-1.01e-07{col 29}{space 2} 6.26e-09{col 40}{space 1}  -16.13{col 49}{space 3}0.000{col 57}{space 4}-1.13e-07{col 70}{space 3}-8.86e-08
+{txt}{space 12}age {c |}{col 17}{res}{space 2}-.0042133{col 29}{space 2} .0001639{col 40}{space 1}  -25.71{col 49}{space 3}0.000{col 57}{space 4}-.0045345{col 70}{space 3}-.0038921
+{txt}{space 6}condition {c |}{col 17}{res}{space 2} .1928592{col 29}{space 2} .0064611{col 40}{space 1}   29.85{col 49}{space 3}0.000{col 57}{space 4} .1801942{col 70}{space 3} .2055242
+{txt}{space 10}_cons {c |}{col 17}{res}{space 2} 10.26296{col 29}{space 2} .0235842{col 40}{space 1}  435.16{col 49}{space 3}0.000{col 57}{space 4} 10.21673{col 70}{space 3} 10.30919
+{txt}{hline 16}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. est store m2
+{txt}
+{com}. 
+. 
+. reg lnrealsales year2000##county acres acres2 sqft sqft2 age condition, robust
+
+{txt}Linear regression                               Number of obs     = {res}     9,773
+                                                {txt}F(9, 9763)        =  {res}  1021.37
+                                                {txt}Prob > F          = {res}    0.0000
+                                                {txt}R-squared         = {res}    0.6409
+                                                {txt}Root MSE          =    {res} .23202
+
+{txt}{hline 16}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 17}{c |}{col 29}    Robust
+{col 1}    lnrealsales{col 17}{c |} Coefficient{col 29}  std. err.{col 41}      t{col 49}   P>|t|{col 57}     [95% con{col 70}f. interval]
+{hline 16}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 5}1.year2000 {c |}{col 17}{res}{space 2}-.0205192{col 29}{space 2} .0053686{col 40}{space 1}   -3.82{col 49}{space 3}0.000{col 57}{space 4}-.0310427{col 70}{space 3}-.0099958
+{txt}{space 15} {c |}
+{space 9}county {c |}
+{space 5}Churchill  {c |}{col 17}{res}{space 2} .0840392{col 29}{space 2} .0073315{col 40}{space 1}   11.46{col 49}{space 3}0.000{col 57}{space 4}  .069668{col 70}{space 3} .0984104
+{txt}{space 15} {c |}
+year2000#county {c |}
+{space 3}1#Churchill  {c |}{col 17}{res}{space 2}-.1251008{col 29}{space 2} .0117209{col 40}{space 1}  -10.67{col 49}{space 3}0.000{col 57}{space 4}-.1480761{col 70}{space 3}-.1021254
+{txt}{space 15} {c |}
+{space 10}acres {c |}{col 17}{res}{space 2} .0139477{col 29}{space 2} .0017738{col 40}{space 1}    7.86{col 49}{space 3}0.000{col 57}{space 4} .0104707{col 70}{space 3} .0174247
+{txt}{space 9}acres2 {c |}{col 17}{res}{space 2}-.0000236{col 29}{space 2} 3.45e-06{col 40}{space 1}   -6.83{col 49}{space 3}0.000{col 57}{space 4}-.0000304{col 70}{space 3}-.0000168
+{txt}{space 11}sqft {c |}{col 17}{res}{space 2} .0007962{col 29}{space 2} .0000467{col 40}{space 1}   17.03{col 49}{space 3}0.000{col 57}{space 4} .0007045{col 70}{space 3} .0008878
+{txt}{space 10}sqft2 {c |}{col 17}{res}{space 2}-1.01e-07{col 29}{space 2} 1.33e-08{col 40}{space 1}   -7.60{col 49}{space 3}0.000{col 57}{space 4}-1.27e-07{col 70}{space 3}-7.49e-08
+{txt}{space 12}age {c |}{col 17}{res}{space 2}-.0042133{col 29}{space 2} .0002478{col 40}{space 1}  -17.01{col 49}{space 3}0.000{col 57}{space 4} -.004699{col 70}{space 3}-.0037277
+{txt}{space 6}condition {c |}{col 17}{res}{space 2} .1928592{col 29}{space 2} .0076735{col 40}{space 1}   25.13{col 49}{space 3}0.000{col 57}{space 4} .1778176{col 70}{space 3} .2079008
+{txt}{space 10}_cons {c |}{col 17}{res}{space 2} 10.26296{col 29}{space 2} .0432453{col 40}{space 1}  237.32{col 49}{space 3}0.000{col 57}{space 4} 10.17819{col 70}{space 3} 10.34773
+{txt}{hline 16}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. est store m3
+{txt}
+{com}. 
+. esttab m1 m2 m3 using "regTableDiD.rtf", se label ar2 replace ///
+>         title("Difference in Difference Models for effect of Cases on House Prices") ///
+>         mtitles("Simple DiD with no Controls" "DiD with Control Variables" "DiD with Robust SEs and Controls") 
+{res}{txt}(output written to {browse  `"regTableDiD.rtf"'})
+
+{com}. 
+. 
+. log close
+      {txt}name:  {res}<unnamed>
+       {txt}log:  {res}D:\1A.SchoolHW\2022 Fall\ECN 140\Emperical project\Cesar_RM_Fall22_project.smcl
+  {txt}log type:  {res}smcl
+ {txt}closed on:  {res} 2 Dec 2022, 21:17:55
+{txt}{.-}
+{smcl}
+{txt}{sf}{ul off}
